@@ -1,0 +1,143 @@
+generator client {
+    provider        = "prisma-client-js"
+    previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+enum StatusAluno {
+    ATIVO
+    INATIVO
+    RENOVAR
+}
+
+enum TipoPlano {
+    ANUAL
+    BIMESTRAL
+    MENSAL
+    SEMESTRAL
+    TRIMESTRAL
+}
+
+model tb_academia {
+    id                  BigInt      @id @default(autoincrement())
+    data_fechamento_mes DateTime?
+    nome                String?
+    tb_aluno            tb_aluno[]
+    tb_despesas         tb_despesas[]
+    tb_faturamento      tb_faturamento[]
+    tb_planos_personalizado tb_planos_personalizado[]
+    tb_planosacademia   tb_planosacademia[]
+    tb_usuario          tb_usuario[]
+}
+
+model tb_aluno {
+    id                        Int        @id @default(autoincrement())
+    data_fim                  DateTime?
+    data_inicio               DateTime?
+    nome                      String?
+    numero_telefone           String?
+    status_aluno              StatusAluno?
+    tipo_plano                TipoPlano?
+    academia_id               BigInt?
+    medidas_id                BigInt?    @unique
+    rua                       String?
+    tipo_plano_personalizado  String?
+    update_at                 DateTime?
+    tb_academia               tb_academia? @relation(fields: [academia_id], references: [id])
+    tb_medidas                tb_medidas?  @relation(fields: [medidas_id], references: [id])
+}
+
+model tb_despesas {
+    id            BigInt     @id @default(autoincrement())
+    data_cadastro DateTime?
+    nome_despesa  String?
+    valor_despesa Decimal?   @db.Decimal(38,2)
+    academia_id   BigInt?
+    tb_academia   tb_academia? @relation(fields: [academia_id], references: [id])
+}
+
+model tb_faturamento {
+    id             BigInt     @id @default(autoincrement())
+    data_fechamento DateTime?
+    nome_mes       String?
+    numero_mes     Int
+    valor          Float?
+    academia_id    BigInt?
+    tb_academia    tb_academia? @relation(fields: [academia_id], references: [id])
+}
+
+model tb_medidas {
+    id                  BigInt     @id @default(autoincrement())
+    abdomen             String?
+    altura              Float?
+    antebraco_direito   String?
+    antebraco_esquerdo  String?
+    braco_direito       String?
+    braco_esquerdo      String?
+    cintura             String?
+    coxa_direita        String?
+    coxa_esquerda       String?
+    panturrilha_direito String?
+    panturrilha_esquerda String?
+    peito               String?
+    peso                BigInt?
+    tb_aluno            tb_aluno[]
+}
+
+model tb_plano_user {
+    id         BigInt      @id @default(autoincrement())
+    nome       String?
+    qtd_alunos BigInt?
+    tb_usuario tb_usuario[]
+}
+
+model tb_planos_personalizado {
+    id                      BigInt     @id @default(autoincrement())
+    nome_plano_personalizado String?
+    qtd_dias_plano          BigInt?
+    valor_plano_personalizado Decimal? @db.Decimal(38,2)
+    academia_id             BigInt?
+    tb_academia             tb_academia? @relation(fields: [academia_id], references: [id])
+}
+
+model tb_planosacademia {
+    id           BigInt     @id @default(autoincrement())
+    qtd_mes_plano BigInt?
+    tipo_plano   TipoPlano?
+    valor_plano  Decimal?   @db.Decimal(38,2)
+    academia_id  BigInt?
+    tb_academia  tb_academia? @relation(fields: [academia_id], references: [id])
+}
+
+model tb_recuperacao {
+    id             BigInt     @id @default(autoincrement())
+    data_expiracao DateTime?
+    token          String?
+    user_id        BigInt?
+    tb_usuario     tb_usuario? @relation(fields: [user_id], references: [id])
+}
+
+model tb_usuario {
+    id                BigInt      @id @default(autoincrement())
+    email             String?
+    expiracao_user    DateTime?
+    login             String?
+    nome              String?
+    nome_academia     String?
+    numero_telefone   String?
+    password          String?
+    preference_id     String?
+    role              String?
+    token_recuperar   String?
+    user_verificado   Boolean?
+    verificacao_wpp   Boolean?
+    academia_id       BigInt?     @unique
+    plano_user_id     BigInt?     @unique
+    tb_academia       tb_academia? @relation(fields: [academia_id], references: [id])
+    tb_plano_user     tb_plano_user? @relation(fields: [plano_user_id], references: [id])
+    tb_recuperacao    tb_recuperacao[]
+}
