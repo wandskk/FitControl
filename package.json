@@ -6,8 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "seed": "node prisma/seed.js --trace-warnings"
   },
+  "type": "module",
   "dependencies": {
     "@prisma/client": "^6.8.2",
     "framer-motion": "^12.15.0",

@@ -43,7 +43,7 @@ model tb_aluno {
     status_aluno              StatusAluno?
     tipo_plano                TipoPlano?
     academia_id               BigInt?
-    medidas_id                BigInt?    @unique
+    medidas_id                BigInt?
     rua                       String?
     tipo_plano_personalizado  String?
     update_at                 DateTime?
@@ -135,8 +135,8 @@ model tb_usuario {
     token_recuperar   String?
     user_verificado   Boolean?
     verificacao_wpp   Boolean?
-    academia_id       BigInt?     @unique
-    plano_user_id     BigInt?     @unique
+    academia_id       BigInt?
+    plano_user_id     BigInt?
     tb_academia       tb_academia? @relation(fields: [academia_id], references: [id])
     tb_plano_user     tb_plano_user? @relation(fields: [plano_user_id], references: [id])
     tb_recuperacao    tb_recuperacao[]
